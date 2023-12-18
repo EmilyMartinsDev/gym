@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// schema.prisma
+// enums.prisma
+
+// Enum for goal
+enum Goal {
+  GAIN_MASS
+  LOSE_FAT
+  MAINTENANCE
+}
+
+// Enum for gender
+enum Gender {
+  F
+  M
+}
+
+// Definition of the tbusuario model
+model User {
+  id                    String     @id @default(uuid())
+  name                  String?
+  email                 String
+  password              String?
+  info                  UserInfo?
+   stripe_custumer_id String?
+  subscription Subscription?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+}
+
+// Definition of the user_info model
+model UserInfo {
+  id                    String     @id @default(uuid())
+  name                  String?
+  email                 String
+  weight                Float?
+  height                Float?
+  body_fat_percentage   Float?
+  goal                  Goal
+  training_time         Int?
+  muscle_group_target   String?
+  gender                Gender
+  age                   Int?
+  activity_level        Float?
+  training_frequency    Int?
+  average_training_time Int?
+  userId               String    @unique
+  // Definition of the relationship with user
+  user      User @relation(fields: [userId], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+}
+
+model Subscription{
+    id String @id
+  status String
+  priceId String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@map("subscriptions")  
+
+  userId String @unique
+  user User @relation(fields: [userId], references: [id])
+}
