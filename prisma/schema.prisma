@@ -35,27 +35,33 @@ model User {
   info                  UserInfo?
    stripe_custumer_id String?
   subscription Subscription?
-
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 }
 
-// Definition of the user_info model
+enum MuscleGroup {
+  PEITO
+  COSTAS
+  OMBROS
+  BICEPS
+  TRICEPS
+  POSTERIOR
+  GLUTEO
+  QUADRICEPS
+  ABDOMEN
+}
 model UserInfo {
   id                    String     @id @default(uuid())
-  name                  String?
-  email                 String
   weight                Float?
   height                Float?
   body_fat_percentage   Float?
   goal                  Goal
-  training_time         Int?
-  muscle_group_target   String?
+  muscle_group_target   Json
   gender                Gender
   age                   Int?
   activity_level        Float?
   training_frequency    Int?
-  average_training_time Int?
+  level                String?
   userId               String    @unique
   // Definition of the relationship with user
   user      User @relation(fields: [userId], references: [id])
@@ -65,7 +71,7 @@ model UserInfo {
 }
 
 model Subscription{
-    id String @id
+    id String @id @default(uuid())
   status String
   priceId String
   created_at DateTime @default(now())
@@ -76,3 +82,4 @@ model Subscription{
   userId String @unique
   user User @relation(fields: [userId], references: [id])
 }
+

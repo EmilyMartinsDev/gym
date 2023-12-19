@@ -26,7 +26,7 @@ celebrate({
 UserController.auth)
 
 
-routerUser.put('/user',
+routerUser.put('/',
 celebrate({
     [Segments.BODY]: {
         name: Joi.string().allow('').optional(),
