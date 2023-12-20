@@ -18,10 +18,25 @@ type WizardForm = {
      activity_level: number      
      training_frequency:number   
      level?:string
+     isFinished:boolean
     
    }
    
-   
+  interface trainWeek{
+    session:{
+        exercicio:{
+            name:string;
+            sets:{
+                reps:string,
+                carga:number
+            }[]
+            rest: number,
+            obs:string,
+            muscle_target:string
+        },
+    }[],
+
+  }
 class CreateUserInfoService{
     async execute({...data}:WizardForm){
        
@@ -47,9 +62,18 @@ class CreateUserInfoService{
                     height: data.height,
                     weight: data.weight,
                     training_frequency: data.training_frequency,
-                    
+                    isFinished:data.isFinished,
                 }
             })
+            
+            switch(info.training_frequency){
+                case 6:
+
+            }
+
+
+
+
             return info
     }
 }

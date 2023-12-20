@@ -35,10 +35,16 @@ model User {
   info                  UserInfo?
    stripe_custumer_id String?
   subscription Subscription?
+  sessions_week TrainWeek[]
+  fedds FeedBack[]
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 }
-
+enum Phase {
+ BASE
+ CHOQUE
+ DELOAD
+}
 enum MuscleGroup {
   PEITO
   COSTAS
@@ -65,7 +71,7 @@ model UserInfo {
   userId               String    @unique
   // Definition of the relationship with user
   user      User @relation(fields: [userId], references: [id])
-
+  isFinished Boolean
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 }
@@ -83,3 +89,73 @@ model Subscription{
   user User @relation(fields: [userId], references: [id])
 }
 
+model TrainWeek {
+  id          String       @id @default(uuid())
+  userId      String       // Relacionamento com o usuário
+  user        User         @relation(fields: [userId], references: [id])
+  protocolId String
+   protocol     Protocol    @relation(fields: [protocolId], references: [id])
+  sessions    TrainSession[] // Relacionamento com as sessões de treino
+}
+
+// models/TrainSession.model.prisma
+
+model TrainSession {
+  id            String       @id @default(uuid())
+  trainWeekId   String       // Relacionamento com a semana de treino
+  trainWeek     TrainWeek    @relation(fields: [trainWeekId], references: [id])
+
+  exercicios    Exercicio[]  // Relacionamento com os exercícios da sessão
+}
+
+model FeedBack{
+  id String @id @default(uuid())
+  userId               String    @unique
+  user      User @relation(fields: [userId], references: [id])
+}
+
+model Muscle {
+  id      String   @id @default(uuid())
+  name    MuscleGroup
+  exercises Exercicio_Muscle[]
+
+}
+model Protocol{
+  id String @id @default(uuid())
+  duration Int @default(12)
+  trainweeks TrainWeek[]
+  phase Phase
+
+}
+
+model Exercicio_Muscle{
+  id String @id @default(uuid())
+  muscleGroupId String  
+  exercicioId String    // Relacionamento com o grupo muscular
+  muscleGroup   Muscle  @relation(fields: [muscleGroupId], references: [id])
+  exercicio Exercicio @relation(fields: [exercicioId], references: [id])
+}
+
+model Exercicio {
+  id            String       @id @default(uuid())
+  trainSessionId String     // Relacionamento com a sessão de treino
+  trainSession TrainSession @relation(fields: [trainSessionId], references: [id])
+
+  name          String
+  sets          Set[]        // Relacionamento com os sets do exercício
+  rest          Int
+  obs           String
+ exercises Exercicio_Muscle[]
+  
+}
+
+// models/Set.model.prisma
+
+model Set {
+  id          String       @id @default(uuid())
+  exercicioId String       // Relacionamento com o exercício
+  exercicio   Exercicio    @relation(fields: [exercicioId], references: [id])
+
+  reps        String
+  carga       Int
+}

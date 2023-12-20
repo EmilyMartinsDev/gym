@@ -14,19 +14,18 @@ CREATE TABLE `User` (
 -- CreateTable
 CREATE TABLE `UserInfo` (
     `id` VARCHAR(191) NOT NULL,
-    `name` VARCHAR(191) NULL,
-    `email` VARCHAR(191) NOT NULL,
     `weight` DOUBLE NULL,
     `height` DOUBLE NULL,
     `body_fat_percentage` DOUBLE NULL,
     `goal` ENUM('GAIN_MASS', 'LOSE_FAT', 'MAINTENANCE') NOT NULL,
-    `muscle_group_target` VARCHAR(191) NULL,
+    `muscle_group_target` JSON NOT NULL,
     `gender` ENUM('F', 'M') NOT NULL,
     `age` INTEGER NULL,
     `activity_level` DOUBLE NULL,
     `training_frequency` INTEGER NULL,
     `level` VARCHAR(191) NULL,
     `userId` VARCHAR(191) NOT NULL,
+    `isFinished` BOOLEAN NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
