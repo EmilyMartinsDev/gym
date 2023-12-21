@@ -15,6 +15,6 @@ class InfoUserController{
 
 
 
-}
+ }
 
 export default new InfoUserController()
