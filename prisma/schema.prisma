@@ -35,16 +35,34 @@ model User {
   info                  UserInfo?
    stripe_custumer_id String?
   subscription Subscription?
-  sessions_week TrainWeek[]
-  fedds FeedBack[]
+   workouts WorkoutUser[]
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
+  
+  @@map("users") 
 }
 enum Phase {
  BASE
  CHOQUE
  DELOAD
 }
+
+enum Level {
+ BEGINNER
+ INTERMEDIATED
+ ADVANCED
+ATHLETE
+}
+
+enum frequency {
+  ONE
+  TWO
+  THREE
+  FOUR
+  FIVE
+  SIX
+}
+
 enum MuscleGroup {
   PEITO
   COSTAS
@@ -61,19 +79,19 @@ model UserInfo {
   weight                Float?
   height                Float?
   body_fat_percentage   Float?
-  goal                  Goal
-  muscle_group_target   Json
-  gender                Gender
+  goal                  Goal?
+  gender                Gender?
   age                   Int?
   activity_level        Float?
-  training_frequency    Int?
-  level                String?
+  level                Level?
   userId               String    @unique
   // Definition of the relationship with user
   user      User @relation(fields: [userId], references: [id])
   isFinished Boolean
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
+  
+  @@map("usersinfos") 
 }
 
 model Subscription{
@@ -89,44 +107,39 @@ model Subscription{
   user User @relation(fields: [userId], references: [id])
 }
 
-model TrainWeek {
-  id          String       @id @default(uuid())
-  userId      String       // Relacionamento com o usuário
-  user        User         @relation(fields: [userId], references: [id])
-  protocolId String
-   protocol     Protocol    @relation(fields: [protocolId], references: [id])
-  sessions    TrainSession[] // Relacionamento com as sessões de treino
+model WorkoutUser{
+  id String @default(uuid()) @id
+  userId String
+  workouId String
+   user User @relation(fields: [userId], references: [id])
+  workout Workout @relation(fields: [workouId], references: [id])
+
+  @@map("workoutsuser") 
 }
 
-// models/TrainSession.model.prisma
-
-model TrainSession {
-  id            String       @id @default(uuid())
-  trainWeekId   String       // Relacionamento com a semana de treino
-  trainWeek     TrainWeek    @relation(fields: [trainWeekId], references: [id])
-
-  exercicios    Exercicio[]  // Relacionamento com os exercícios da sessão
+model Workout{
+  name String?
+  id String @default(uuid()) @id
+  workout_level Level
+  frequency  frequency
+  fase Phase
+  muscle_target MuscleGroup
+ workouts WorkoutUser[]
+   created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  @@map("workouts") 
 }
 
-model FeedBack{
-  id String @id @default(uuid())
-  userId               String    @unique
-  user      User @relation(fields: [userId], references: [id])
-}
 
 model Muscle {
   id      String   @id @default(uuid())
   name    MuscleGroup
   exercises Exercicio_Muscle[]
-
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  @@map("muscles") 
 }
-model Protocol{
-  id String @id @default(uuid())
-  duration Int @default(12)
-  trainweeks TrainWeek[]
-  phase Phase
 
-}
 
 model Exercicio_Muscle{
   id String @id @default(uuid())
@@ -134,19 +147,21 @@ model Exercicio_Muscle{
   exercicioId String    // Relacionamento com o grupo muscular
   muscleGroup   Muscle  @relation(fields: [muscleGroupId], references: [id])
   exercicio Exercicio @relation(fields: [exercicioId], references: [id])
+    created_at DateTime @default(now())
+  updated_at DateTime @default(now())
 }
 
 model Exercicio {
   id            String       @id @default(uuid())
-  trainSessionId String     // Relacionamento com a sessão de treino
-  trainSession TrainSession @relation(fields: [trainSessionId], references: [id])
 
   name          String
   sets          Set[]        // Relacionamento com os sets do exercício
   rest          Int
   obs           String
  exercises Exercicio_Muscle[]
-  
+    created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  @@map("exercicses") 
 }
 
 // models/Set.model.prisma
@@ -158,4 +173,7 @@ model Set {
 
   reps        String
   carga       Int
+    created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+    @@map("sets") 
 }

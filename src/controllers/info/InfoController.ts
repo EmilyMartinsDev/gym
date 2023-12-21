@@ -5,10 +5,9 @@ class InfoUserController{
     async store(req: Request, res: Response ){
 
         const {data} = req.body
-        const userId = req.userId
         const createUserInfo = new CreateUserInfoService()
         const user  = await createUserInfo.execute({
-           ...data, userId
+           ...data, userId:req.userId
         })
         
         return res.json(user)

@@ -6,6 +6,8 @@ import { isAuthenticated } from "../../middlewares/isAuthenticated";
 const routerInfoUser = Router()
 
 routerInfoUser.post('/',
+
+
 isAuthenticated,    
   InfoController.store)
 

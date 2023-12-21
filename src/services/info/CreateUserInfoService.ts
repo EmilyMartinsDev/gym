@@ -1,5 +1,6 @@
-import { Goal } from "@prisma/client";
+
 import prismaClient from "../../prisma";
+import { Level, frequency, Goal } from "../../types";
 type WizardForm = {
     userId:string
      id    :string              
@@ -11,13 +12,11 @@ type WizardForm = {
      age:number  
    
      body_fat_percentage   :number
-     goal :string                 
+     goal :          Goal.GAIN_MASS |Goal.LOSE_FAT| Goal.MAINTENANCE,       
      training_time      :number   
-     muscle_group_target :string 
          
      activity_level: number      
-     training_frequency:number   
-     level?:string
+     level:Level.ADVANCED |  Level.BEGINNER | Level.BEGINNER
      isFinished:boolean
     
    }
@@ -40,41 +39,42 @@ type WizardForm = {
 class CreateUserInfoService{
     async execute({...data}:WizardForm){
        
-            const exists = await prismaClient.userInfo.findFirst({
+         try{
+            const exists = await prismaClient.userInfo.findUnique({
                 where:{
-                    id: data.id
+                    userId: data.userId,
                 }
             })
         
             if (exists){
-                return exists
+                throw new Error("already exists");
+                
             }
             const info = await prismaClient.userInfo.create({
                 data:{
                     gender: data.gender,
-                    goal: data.goal as Goal,
+                    goal: data.goal,
                     activity_level: data.activity_level,
                     age: data.age,
                     body_fat_percentage: data.body_fat_percentage,
                     level: data.level,
-                    muscle_group_target: data.muscle_group_target,
-                    userId: data.userId,
                     height: data.height,
                     weight: data.weight,
-                    training_frequency: data.training_frequency,
                     isFinished:data.isFinished,
-                }
+                    user:{
+                        connect:{
+                            id:data.userId
+                        }
+                    }
+                },
             })
             
-            switch(info.training_frequency){
-                case 6:
-
-            }
-
-
-
-
             return info
+         }catch(err){
+            console.log(err)
+         }
+
+            
     }
 }
 export default CreateUserInfoService
