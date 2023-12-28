@@ -1,6 +1,6 @@
 
 import prismaClient from "../../prisma";
-import { Level, frequency, Goal } from "../../types";
+import { Level, frequency, Goal, MuscleGroup } from "../../types";
 type WizardForm = {
     userId:string
      id    :string              
@@ -14,11 +14,11 @@ type WizardForm = {
      body_fat_percentage   :number
      goal :          Goal.GAIN_MASS |Goal.LOSE_FAT| Goal.MAINTENANCE,       
      training_time      :number   
-         
+     frequency: frequency.FIVE | frequency.FOUR | frequency.SIX | frequency.THREE       
      activity_level: number      
      level:Level.ADVANCED |  Level.BEGINNER | Level.BEGINNER
      isFinished:boolean
-    
+    muscle_target:MuscleGroup.ABDOMEN |MuscleGroup.BICEPS | MuscleGroup.COSTAS | MuscleGroup.GLUTEO | MuscleGroup.OMBROS | MuscleGroup.PEITO | MuscleGroup.POSTERIOR | MuscleGroup.QUADRICEPS | MuscleGroup.QUADRICEPS | MuscleGroup.TRICEPS
    }
    
   interface trainWeek{
@@ -52,6 +52,8 @@ class CreateUserInfoService{
             }
             const info = await prismaClient.userInfo.create({
                 data:{
+                    frequency: data.frequency,
+                    muscle_target:data.muscle_target,
                     gender: data.gender,
                     goal: data.goal,
                     activity_level: data.activity_level,
@@ -68,8 +70,26 @@ class CreateUserInfoService{
                     }
                 },
             })
-            
-            return info
+          
+          
+
+            const training = await prismaClient.workout.create({
+                data:{
+                    name: `hypertrophy-base ${info.userId}`,
+                    fase:"BASE",
+                    frequency: info.frequency,
+                    muscle_target: info.muscle_target,
+                    workout_level: info.level,
+                   
+                }
+            })
+            const userTraining = await prismaClient.workoutUser.create({
+                data:{
+                    userId: info.userId,
+                    workouId: training.id
+                }
+            })
+            return {info, userTraining}
          }catch(err){
             console.log(err)
          }

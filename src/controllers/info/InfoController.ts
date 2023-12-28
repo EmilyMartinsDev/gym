@@ -13,6 +13,11 @@ class InfoUserController{
         return res.json(user)
     }
 
+    async index(req: Request, res: Response){
+        const userId = req.userId
+        
+    }
+
 
 
  }

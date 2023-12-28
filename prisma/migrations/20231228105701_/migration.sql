@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `usersinfos` ADD COLUMN `frequency` ENUM('ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX') NULL,
+    ADD COLUMN `muscle_target` ENUM('PEITO', 'COSTAS', 'OMBROS', 'BICEPS', 'TRICEPS', 'POSTERIOR', 'GLUTEO', 'QUADRICEPS', 'ABDOMEN') NULL;

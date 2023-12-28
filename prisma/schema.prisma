@@ -83,6 +83,8 @@ model UserInfo {
   gender                Gender?
   age                   Int?
   activity_level        Float?
+  muscle_target         MuscleGroup?
+  frequency frequency?
   level                Level?
   userId               String    @unique
   // Definition of the relationship with user
@@ -125,11 +127,11 @@ model Workout{
   fase Phase
   muscle_target MuscleGroup
  workouts WorkoutUser[]
+  micros Microcycle[]
    created_at DateTime @default(now())
   updated_at DateTime @default(now())
   @@map("workouts") 
 }
-
 
 model Muscle {
   id      String   @id @default(uuid())
@@ -140,6 +142,17 @@ model Muscle {
   @@map("muscles") 
 }
 
+model Session_Exercise{
+ id      String   @id @default(uuid())
+  sets          Set[]  
+ sessionId String
+ exercicioId String
+  rest          Int
+  obs           String
+ session Session @relation(fields: [sessionId], references: [id])
+ exercises Exercicio @relation(fields: [exercicioId], references: [id])
+ @@map("sessions_exercises")
+}
 
 model Exercicio_Muscle{
   id String @id @default(uuid())
@@ -153,23 +166,32 @@ model Exercicio_Muscle{
 
 model Exercicio {
   id            String       @id @default(uuid())
-
+ exercises_session Session_Exercise[]
   name          String
-  sets          Set[]        // Relacionamento com os sets do exercício
-  rest          Int
-  obs           String
+       // Relacionamento com os sets do exercíci
  exercises Exercicio_Muscle[]
     created_at DateTime @default(now())
   updated_at DateTime @default(now())
   @@map("exercicses") 
 }
 
+model Microcycle{
+ id            String       @id @default(uuid())
+ sessions Session[]
+ workoutId String
+   wokout Workout  @relation(fields: [workoutId], references: [id])
+}
 // models/Set.model.prisma
-
+model Session{
+  id      String   @id @default(uuid())
+  exercises_session Session_Exercise[]
+  microcicleId String
+    micro Microcycle  @relation(fields: [microcicleId], references: [id])
+}
 model Set {
   id          String       @id @default(uuid())
   exercicioId String       // Relacionamento com o exercício
-  exercicio   Exercicio    @relation(fields: [exercicioId], references: [id])
+  exercicio   Session_Exercise    @relation(fields: [exercicioId], references: [id])
 
   reps        String
   carga       Int
